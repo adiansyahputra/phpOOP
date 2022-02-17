@@ -123,5 +123,116 @@ $joko->sayHello(null);
 $eko->info();
 $joko->info();
 
+This Keyword
+Saat kita membuat kode di dalam function di dalam class, kita bisa menggunakan kata kunci this untuk mengakses object saat ini
+Misal kadang kita butuh mengakses properties atau function lain di class yang sama
+
+Kode : This Keyword
+ function sayHello(?string $name)
+    {
+        if (is_null($name)) {
+            echo "Hi, my name is $this->name" . PHP_EOL;
+        } else {
+            echo "Hi $name, my name is $this->name" . PHP_EOL;
+        }
+    }
+
+Constant
+Properties di class bisa diubah, mirip seperti variable
+Di class juga kita membuat constant, data yang tidak bisa diubah
+Di materi PHP Dasar, kita belajar untuk membuat constant itu perlu menggunakan function define()
+Namun sejak PHP 7.4, kita bisa menggunakan kata kunci const untuk membuat constant, mirip seperti variable, namun tidak menggunakan karakter $
+
+Kode : Constant
+require_once "data/Person.php";
+
+define("APPLICATION", "Belajar PHP OOP");
+const APP_VERSION = "1.0.0";
+
+echo APPLICATION . PHP_EOL;
+echo APP_VERSION . PHP_EOL;
+echo Person::AUTHOR . PHP_EOL;
+
+Kode : Constant di Class
+const AUTHOR = "Programmer Zaman Now";
+
+Kode : Mengakses Constant di Class
+echo Person::AUTHOR . PHP_EOL;
+
+self Keyword
+Properties vs Constant
+Saat kita membuat object, properties yang terdapat di class akan secara otomatis dibuat per object, oleh karena itu untuk mengakses properties, kita perlu menggunakan object, atau jika dari dalam object tersebut sendiri, kita perlu menggunakan kata kunci this
+Sedangkan berbeda dengan constant, constant di class tidak akan dibuat per object. Constant itu hidupnya di class, bukan di object, oleh karena itu untuk mengaksesnya kita perlu menggunakan NamaClass::NAMA_CONSTANT
+Secara sederhana, properties akan dibuat satu per instance class (object), sedangkan constant dibuat satu per class
+
+self Keyword
+Jika di dalam class (misal di function) kita ingin mengakses constant, kita perlu mengakses menggunakan NamaClass::NAMA_CONSTANT
+Namun jika di dalam class yang sama, kita bisa menggunakan kata kunci self untuk mempermudah
+
+Kode : self Keyword
+
+class Person {
+    function info()
+    {
+        echo "Author : " . self::AUTHOR . PHP_EOL;
+    }
+}
+
+$eko->info();
+$joko->info();
+
+Constructor
+Saat kita membuat Object, maka kita seperti memanggil sebuah function, karena kita menggunakan kurung ()
+Di dalam class PHP, kita bisa membuat constructor, constructor adalah function  yang akan dipanggil saat pertama kali Object dibuat.
+Mirip seperti di function, kita bisa memberi parameter pada constructor
+Nama constructor di PHP haruslah __construct()
+
+Kode : Membuat Constructor
+class Person
+{
+    const AUTHOR = "Programmer Zaman Now";
+
+    var string $name;
+    var ?string $address = null;
+    var string $country = "Indonesia";
+
+    function __construct(string $name, ?string $address)
+    {
+        $this->name = $name;
+        $this->address = $address;
+    }
+
+Kode : Menggunakan Constructor
+
+<?php
+
+require_once "data/Person.php";
+
+$eko = new Person("Eko", "Subang");
+
+var_dump($eko);
+
+Destructor
+Jika constructor adalah function yang akan dipanggil ketika object dibuat
+Destructor adalah function yang akan dipanggil ketika object dihapus dari memory
+Biasanya ketika object tersebut sudah tidak lagi digunakan, atau ketika aplikasi akan mati
+Untuk membuat function destructor, kita bisa menggunakan nama function __destruct()
+Khusus untuk destructor, kita tidak boleh menambahkan function argument
+Dalam penggunaan sehari-hari, ini misal cocok untuk menutup koneksi ke database atau menutup proses menulis ke file, sehingga tidak terjadi memory leak
+
+Kode : Destructor
+function __destruct()
+    {
+        echo "Object person $this->name is destroyed" . PHP_EOL;
+    }
+
+require_once "data/Person.php";
+
+$eko = new Person("Eko", "Subang");
+$joko = new Person("Joko", "Subang");
+
+echo "Program Selesai" . PHP_EOL;
+
+
 
 */
