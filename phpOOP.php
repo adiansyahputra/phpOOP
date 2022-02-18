@@ -485,6 +485,98 @@ echo $product->getPrice() . PHP_EOL;
 $dummy = new ProductDummy("Dummy", 1000);
 $dummy->info();
 
+Function Overriding
+Function overriding adalah kemampuan mendeklarasikan ulang function di child class, yang sudah ada di parent class
+Saat kita melakukan proses overriding tersebut, secara otomatis ketika kita membuat object dari class child, function yang di class parent tidak bisa diakses lagi
+
+Kode : Method Overriding
+class Manager
+{
+    var string $name;
+
+    var string $title;
+
+    public function __construct(string $name = "", string $title = "Manager")
+    {
+        $this->name = $name;
+        $this->title = $title;
+    }
+
+    function sayHello(string $name): void
+    {
+        echo "Hi $name, my name is Manager $this->name" . PHP_EOL;
+    }
+}
+
+class VicePresident extends Manager
+{
+
+    public function __construct(string $name = "")
+    {
+        // tidak wajib, tapi direkomendasikan
+        parent::__construct($name, "VP");
+    }
+
+    function sayHello(string $name): void
+    {
+        echo "Hi $name, my name is VP $this->name" . PHP_EOL;
+    }
+}
+
+Kode : Mengakses Function Overriding
+require_once "data/Manager.php";
+
+$manager = new Manager();
+$manager->name = "Budi";
+$manager->sayHello("Joko");
+
+$vp = new VicePresident();
+$vp->name = "Eko";
+$vp->sayHello("Joko");
+
+parent Keyword
+Kadang kita ingin mengakses function yang terdapat di class parent yang sudah terlanjur kita override di class child
+Untuk mengakses function milik class parent, kita bisa menggunakan kata kunci parent
+Sederhananya, parent digunakan untuk mengakses class parent
+
+Kode : Parent Keyword
+namespace Data;
+
+class Shape
+{
+
+    public function getCorner()
+    {
+        return -1;
+    }
+}
+
+class Rectangle extends Shape
+{
+
+    public function getCorner()
+    {
+        return 4;
+    }
+
+    public function getParentCorner()
+    {
+        return parent::getCorner();
+    }
+}
+
+Kode menggunakan parent keyword
+require_once "data/Shape.php";
+
+use Data\{Shape, Rectangle};
+
+$shape = new Shape();
+echo $shape->getCorner() . PHP_EOL;
+
+$rectangle = new Rectangle();
+echo $rectangle->getCorner() . PHP_EOL;
+echo $rectangle->getParentCorner() . PHP_EOL;
+
 
 
 
