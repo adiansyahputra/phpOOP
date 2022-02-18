@@ -233,6 +233,259 @@ $joko = new Person("Joko", "Subang");
 
 echo "Program Selesai" . PHP_EOL;
 
+Inheritance
+Inheritance atau pewarisan adalah kemampuan untuk menurunkan sebuah class ke class lain
+Dalam artian, kita bisa membuat class Parent dan class Child
+Class Child, hanya bisa punya satu class Parent, namun satu class Parent bisa punya banyak class Child
+Saat sebuah class diturunkan, maka semua properties dan function yang ada di class Parent, secara otomatis akan dimiliki oleh class Child
+Untuk melakukan pewarisan, di class Child, kita harus menggunakan kata kunci extends lalu diikuti dengan nama class parent nya.
+
+Kode : Inheritance
+class Manager
+{
+    var string $name;
+
+    var string $title;
+
+    public function __construct(string $name = "", string $title = "Manager")
+    {
+        $this->name = $name;
+        $this->title = $title;
+    }
+
+    function sayHello(string $name): void
+    {
+        echo "Hi $name, my name is Manager $this->name" . PHP_EOL;
+    }
+}
+
+class VicePresident extends Manager
+{
+
+    public function __construct(string $name = "")
+    {
+        // tidak wajib, tapi direkomendasikan
+        parent::__construct($name, "VP");
+    }
+
+    function sayHello(string $name): void
+    {
+        echo "Hi $name, my name is VP $this->name" . PHP_EOL;
+    }
+}
+
+Kode : Mengakses Method Parent
+require_once "data/Manager.php";
+
+$manager = new Manager();
+$manager->name = "Budi";
+$manager->sayHello("Joko");
+
+$vp = new VicePresident();
+$vp->name = "Eko";
+$vp->sayHello("Joko");
+
+Namespace
+Saat kita membuat aplikasi, bisa dipastikan kita akan banyak sekali membuat class
+Jika class terlalu banyak, kadang akan menyulitkan kita untuk mencari atau mengklasifikasikan jenis-jenis class
+PHP memiliki fitur namespace, dimana kita bisa menyimpan class-class kita di dalam namespace
+Namespace bisa nested, dan jika kita ingin mengakses class yang terdapat di namespace, kita perlu menyebutkan nama namespace nya
+Namespace bagus ketika kita punya beberapa class yang sama, dengan menggunakan namespace nama class sama tidak akan menjadikan error di PHP
+
+Membuat Namespace
+Untuk membuat namespace, kita bisa menggunakan kata kunci namespace
+Jika kita ingin membuat sub namespace, kita cukup gunakan karakter \ setelah namespace sebelumnya
+
+Kode : Membuat Namespace
+namespace Data\One {
+    class Conflict
+    {
+    }
+
+    class Sample
+    {
+    }
+
+    class Dummy
+    {
+    }
+}
+
+namespace Data\Two {
+    class Conflict
+    {
+    }
+}
+
+Kode : Membuat Object dari Namespace
+require_once "data/Conflict.php";
+    require_once "data/Helper.php";
+
+    $conflict1 = new Data\One\Conflict();
+    $conflict2 = new Data\Two\Conflict();
+
+Function dan Constant di Namespace
+Selain class, kita juga menggunakan function dan constant di namespace
+Dan jika kita ingin menggunakan function atau constant tersebut, kita bisa menggunakannya dengan diawali dengan nama namespace nya
+
+Kode : Function dan Constant di Namespace
+namespace Helper;
+
+function helpMe()
+{
+    echo "HELP ME" . PHP_EOL;
+}
+
+const APPLICATION = "Belajar PHP OOP";
+
+Global Namespace
+Secara default saat kita membuat kode di PHP sebenarnya itu disimpan di global namespace
+Global namespace adalah namespace yang tidak memiliki nama namespace
+
+Kode : Global Namespace
+namespace {
+
+    require_once "data/Conflict.php";
+    require_once "data/Helper.php";
+
+    $conflict1 = new Data\One\Conflict();
+    $conflict2 = new Data\Two\Conflict();
+
+    echo Helper\APPLICATION . PHP_EOL;
+
+    Helper\helpMe();
+}
+
+Import
+
+use Keyword
+Sebelumnya kita sudah tahu bahwa untuk menggunakan class, function atau constant di namespace kita perlu menyebutkan nama namespace nya di awal
+Jika terlalu sering menggunakan class, function atau constant yang sama, maka terlalu banyak duplikasi dengan menyebut namespace yang sama berkali-kali
+Hal ini bisa kita hindari dengan cara mengimport class, function atau constant tersebut dengan menggunakan kata kunci use
+
+Kode : use Keyword
+require_once "data/Conflict.php";
+require_once "data/Helper.php";
+
+use Data\One\Conflict;
+use function Helper\helpMe;
+use const Helper\APPLICATION;
+
+$conflict1 = new Conflict();
+$conflict2 = new Data\Two\Conflict();
+
+helpMe();
+
+echo APPLICATION . PHP_EOL;
+
+Alias
+Saat kita menggunakan use, artinya kita tidak perlu lagi menggunakan nama namespace diawal class ketika kita ingin membuat class tersebut
+Namun bagaimana jika kita ternyata nama class nya sama?
+Untungnya PHP memiliki fitur yang namanya alias
+Alias adalah kemampuan membuat nama lain dari class, function atau constant yang ada
+Kita bisa menggunakan kata kunci as setelah melakukan use
+
+Kode : Alias
+require_once "data/Conflict.php";
+require_once "data/Helper.php";
+
+use Data\One\Conflict as Conflict1;
+use Data\Two\Conflict as Conflict2;
+use function Helper\helpMe as help;
+use const Helper\APPLICATION as APP;
+
+$conflict1 = new Conflict1();
+$conflict2 = new Conflict2();
+
+help();
+
+echo APP . PHP_EOL;
+
+Group use Declaration
+Kadang kita butuh melakukan import banyak hal di satu namespace yang sama
+PHP memiliki fitur grup use, dimana kita bisa import beberapa class, function atau constant dalam satu perintah use
+Untuk melakukan itu, kita bisa menggunakan kurung { } 
+
+Kode : Group use Declaration
+require_once "data/Conflict.php";
+require_once "data/Helper.php";
+
+use Data\One\{Conflict as Conflict1, Dummy, Sample};
+use function Helper\{helpMe};
+
+$conflict = new Conflict1();
+$dummy = new Dummy();
+$sample = new Sample();
+
+Visibility
+Visibility / Access modifier adalah kemampuan properties, function dan constant dapat diakses dari mana saja
+Secara default, properties, function dan constant yang kita buat di dalam class bisa diakses dari mana saja, atau artinya dia adalah public
+Selain public, masih ada beberapa visibility lainnya
+Secara default kata kunci var untuk properties adalah sifatnya public
+
+Access Level
+ Modifier
+Class
+Subclass
+World
+public
+Y
+Y
+Y
+protected
+Y
+Y
+N
+private
+Y
+N
+N
+
+Kode : Class Product
+class Product
+{
+    protected string $name;
+    protected int $price;
+
+    public function __construct(string $name, int $price)
+    {
+        $this->name = $name;
+        $this->price = $price;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+}
+
+class ProductDummy extends Product
+{
+
+    public function info()
+    {
+        echo "Name $this->name" . PHP_EOL;
+        echo "Price $this->price" . PHP_EOL;
+    }
+}
+
+Kode : Menggunakan Product
+require_once "data/Product.php";
+
+$product = new Product("Apple", 20000);
+
+echo $product->getName() . PHP_EOL;
+echo $product->getPrice() . PHP_EOL;
+
+$dummy = new ProductDummy("Dummy", 1000);
+$dummy->info();
+
+
 
 
 */
