@@ -577,6 +577,277 @@ $rectangle = new Rectangle();
 echo $rectangle->getCorner() . PHP_EOL;
 echo $rectangle->getParentCorner() . PHP_EOL;
 
+Constructor Overriding
+Karena constructor sama seperti function, maka constructor-pun bisa kita deklarasikan ulang di class Child nya
+Sebenarnya di PHP, kita bisa meng-override function dengan arguments yang berbeda, namun sangat tidak disarankan
+Jika kita melakukan override function dengan arguments berbeda, maka PHP akan menampilkan WARNING
+Namun berbeda dengan constructor overriding, kita boleh meng-override dengan mengubah arguments nya, namun direkomendasikan untuk memanggil parent constructor
+
+Kode : Merubah Arguments Overriding
+class Manager
+{
+    var string $name;
+
+    var string $title;
+
+    public function __construct(string $name = "", string $title = "Manager")
+    {
+        $this->name = $name;
+        $this->title = $title;
+    }
+
+Kode : Constructor Overriding (2)
+class VicePresident extends Manager
+{
+
+    public function __construct(string $name = "")
+    {
+        // tidak wajib, tapi direkomendasikan
+        parent::__construct($name, "VP");
+    }
+
+Polymorphism
+Polymorphism berasal dari bahasa Yunani yang berarti banyak bentuk.
+Dalam OOP, Polymorphism adalah kemampuan sebuah object berubah bentuk menjadi bentuk lain
+Polymorphism erat hubungannya dengan Inheritance
+
+Kode : Inheritance
+class Programmer
+{
+
+    public string $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+}
+
+class BackendProgrammer extends Programmer
+{
+}
+
+class FrontendProgrammer extends Programmer
+{
+}
+
+class Company
+{
+    public Programmer $programmer;
+}
+
+
+function sayHelloProgrammer(Programmer $programmer)
+{
+    if ($programmer instanceof BackendProgrammer) {
+        echo "Hello Backend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof FrontendProgrammer) {
+        echo "Hello Frontend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof Programmer) {
+        echo "Hello Programmer $programmer->name" . PHP_EOL;
+    }
+}
+
+
+Kode : Polymorphism
+require_once "data/Programmer.php";
+
+$company = new Company();
+$company->programmer = new Programmer("Eko");
+var_dump($company);
+
+$company->programmer = new BackendProgrammer("Eko");
+var_dump($company);
+
+$company->programmer = new FrontendProgrammer("Eko");
+var_dump($company);
+
+Kode : Function Argument Polymorphism
+function sayHelloProgrammer(Programmer $programmer)
+{
+    if ($programmer instanceof BackendProgrammer) {
+        echo "Hello Backend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof FrontendProgrammer) {
+        echo "Hello Frontend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof Programmer) {
+        echo "Hello Programmer $programmer->name" . PHP_EOL;
+    }
+}
+
+sayHelloProgrammer(new Programmer("Eko"));
+sayHelloProgrammer(new BackendProgrammer("Eko"));
+sayHelloProgrammer(new FrontendProgrammer("Eko"));
+
+Type Check & Casts
+Sebelumnya kita sudah tau cara melakukan konversi tipe data bukan class
+Khusus untuk tipe data object, kita tidak perlu melakukan konversi secara eksplisit
+Namun agar aman, sebelum melakukan casts, pastikan kita melakukan type check (pengecekan tipe data), dengan menggunakan kata kunci instanceof
+Hasil operator instanceof adalah boolean, true jika tipe data sesuai, false jika tidak sesuai
+
+Kode : Type Check & Casts
+function sayHelloProgrammer(Programmer $programmer)
+{
+    if ($programmer instanceof BackendProgrammer) {
+        echo "Hello Backend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof FrontendProgrammer) {
+        echo "Hello Frontend Programmer $programmer->name" . PHP_EOL;
+    } else if ($programmer instanceof Programmer) {
+        echo "Hello Programmer $programmer->name" . PHP_EOL;
+    }
+}
+
+Abstract Class
+Saat kita membuat class, kita bisa menjadikan sebuah class sebagai abstract class.
+Abstract class artinya, class tersebut tidak bisa dibuat sebagai object secara langsung, hanya bisa diturunkan
+Untuk membuat sebuah class menjadi abstract, kita bisa menggunakan kata kunci abstract sebelum kata kunci class
+Sehingga Abstract Class bisa kita gunakan sebagai kontrak child class
+
+Kode : Abstract Class
+namespace Data;
+
+abstract class Location
+{
+
+    public string $name;
+}
+
+class City extends Location
+{
+}
+
+class Province extends Location
+{
+}
+
+class Country extends Location
+{
+}
+
+Kode : Membuat Abstract Class
+require_once "data/Location.php";
+
+use Data\{Location, City, Province, Country};
+
+// $location = new Location(); ERROR
+
+$city = new City();
+$province = new Province();
+$country = new Country();
+
+Abstract Function
+Saat kita membuat class yang abstract, kita bisa membuat abstract function juga di dalam class abstract tersebut
+Saat kita membuat sebuah abstract function, kita tidak boleh membuat block function untuk function tersebut
+Artinya, abstract function wajib di override di class child
+Abstract function tidak boleh memiliki access modifier private
+
+Kode : Abstract Function
+namespace Data;
+
+require_once "Food.php";
+
+abstract class Animal
+{
+    public string $name;
+
+    abstract public function run(): void;
+
+    abstract public function eat(AnimalFood $animalFood): void;
+}
+
+class Cat extends Animal
+{
+    public function run(): void
+    {
+        echo "Cat $this->name is running" . PHP_EOL;
+    }
+
+    public function eat(AnimalFood $animalFood): void
+    {
+        echo "Cat is eating" . PHP_EOL;
+    }
+}
+
+Kode : Menggunakan Abstract Function
+require_once "data/Animal.php";
+
+use Data\{Animal, Cat, Dog};
+
+$cat = new Cat();
+$cat->name = "Luna";
+$cat->run();
+
+Getter dan Setter
+
+Encapsulation
+Encapsulation artinya memastikan data sensitif sebuah object tersembunyi dari akses luar
+Hal ini bertujuan agar kita bisa menjaga agar data sebuah object tetap baik dan valid
+Untuk mencapai ini, biasanya kita akan membuat semua properties menggunakan access modifier private, sehingga tidak bisa diakses atau diubah dari luar
+Agar bisa diubah, kita akan menyediakan function untuk mengubah dan mendapatkan properties tersebut
+
+Getter dan Setter
+Di PHP, proses encapsulation sudah dibuat standarisasinya, dimana kita bisa menggunakan Getter dan Setter method.
+Getter adalah function yang dibuat untuk mengambil data field
+Setter ada function untuk mengubah data field
+
+Getter dan Setter Method
+ Tipe Data
+Getter Method
+Setter Method
+boolean
+isXxx(): bool
+setXxx(bool value)
+lainnya
+getXxx(): tipeData
+setXxx(tipeData value)
+
+Kode : Getter dan Setter
+class Category
+{
+    private string $name;
+    private bool $expensive;
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        if (trim($name) != "") {
+            $this->name = $name;
+        }
+    }
+
+    public function isExpensive(): bool
+    {
+        return $this->expensive;
+    }
+
+    public function setExpensive(bool $expensive): void
+    {
+        $this->expensive = $expensive;
+    }
+}
+
+Kode : Menggunakan Getter dan Setter
+require_once "data/Category.php";
+
+$category = new Category();
+$category->setName("Handphone");
+$category->setExpensive(true);
+
+$category->setName("              ");
+echo "Name : {$category->getName()}" . PHP_EOL;
+echo "Expensive : {$category->isExpensive()}" . PHP_EOL;
+
+Kode : Validation di Setter
+public function setName(string $name): void
+    {
+        if (trim($name) != "") {
+            $this->name = $name;
+        }
+    }
+
 
 
 
