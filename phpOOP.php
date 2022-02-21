@@ -1085,6 +1085,149 @@ class Person {
     }
 }
 
+Trait Conflict
+Jika kita menggunakan lebih dari satu trait, lalu terdapat function yang sama di trait tersebut
+Maka hal tersebut akan menyebabkan konflik
+Jika terjadi konflik seperti ini, kita bisa mengatasinya dengan menggunakan kata kunci insteadof
 
+Kode : Trait Conflict (1)
+trait A
+{
+    function doA(): void
+    {
+        echo "a" . PHP_EOL;
+    }
+
+    function doB(): void
+    {
+        echo "b" . PHP_EOL;
+    }
+}
+
+trait B
+{
+    function doA(): void
+    {
+        echo "A" . PHP_EOL;
+    }
+
+    function doB(): void
+    {
+        echo "B" . PHP_EOL;
+    }
+}
+
+Kode : Trait Conflict (2)
+class Sample
+{
+    use A, B {
+        A::doA insteadof B;
+        B::doB insteadof A;
+    }
+}
+
+$sample = new Sample();
+$sample->doA();
+$sample->doB();
+
+Trait Inheritance
+Sebelumnya kita sudah tahu bahwa class bisa menggunakan trait lebih dari satu
+Lantas bagaimana dengan trait yang menggunakan trait lain?
+Trait bisa menggunakan trait lain, mirip seperti interface yang bisa implement interface lain
+Untuk menggunakan trait lain dari trait, penggunaannya sama seperti dengan penggunaan trait di class
+
+Kode : Trait Inheritance
+trait All
+{
+    use SayGoodBye, SayHello, HasName, CanRun {
+        // bisa di override
+        // hello as private;
+        // goodBye as private;
+    }
+}
+class Person extends ParentPerson
+{
+    use All;
+
+Final Class
+Kata kunci final bisa digunakan di class, dimana jika kita menggunakan kata kunci final sebelum class, maka kita menandakan bahwa class tersebut tidak bisa diwariskan lagi
+Secara otomatis semua class child nya akan error
+
+Kode : Final Class
+class SocialMedia
+{
+    public string $name;
+}
+
+final class Facebook extends SocialMedia
+{
+    final public function login(string $username, string $password): bool
+    {
+        return true;
+    }
+}
+
+// error
+class FakeFacebook extends Facebook
+{
+
+Final Function
+Kata kunci final juga bisa digunakan di function
+Jika sebuah function kita tambahkan kata kunci final, maka artinya function tersebut tidak bisa di override lagi di class child nya
+Ini sangat cocok jika kita ingin mengunci implementasi dari sebuah method agar tidak bisa diubah lagi oleh class child nya
+
+Kode : Final Method
+class Facebook extends SocialMedia
+{
+    final public function login(string $username, string $password): bool
+    {
+        return true;
+    }
+}
+
+// error
+class FakeFacebook extends Facebook
+{
+    // error
+    public function login(string $username, string $password): bool
+    {
+        return false;
+    }
+}
+
+Anonymous Class
+Anonymous class atau class tanpa nama.
+Adalah kemampuan mendeklarasikan class, sekaligus meng-instansiasi object-nya secara langsung
+Anonymous class sangat cocok ketika kita berhadapan dengan kasus membuat implementasi interface atau abstract class sederhana, tanpa harus membuat implementasi class nya
+
+Kode : Anonymous Class
+interface HelloWorld
+{
+    function sayHello(): void;
+}
+
+$helloWorld = new class("Eko") implements HelloWorld
+{
+    public function sayHello(): void
+    {
+        echo "Hello $this->name" . PHP_EOL;
+    }
+};
+$helloWorld->sayHello();
+
+Constructor di Anonymous Class
+Anonymous class juga mendukung constructor
+Jadi kita bisa menambahkan constructor jika kita mau
+
+Kode : Constructor di Anonymous Class
+$helloWorld = new class("Eko") implements HelloWorld
+{
+
+    public string $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
 
 */
