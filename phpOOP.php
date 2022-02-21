@@ -848,6 +848,242 @@ public function setName(string $name): void
         }
     }
 
+Interface
+Sebelumnya kita sudah tahu bahwa abstract class bisa kita gunakan sebagai kontrak untuk class child nya.
+Namun sebenarnya yang lebih tepat untuk kontrak adalah Interface
+Jangan salah sangka bahwa Interface disini bukanlah User Interface
+Interface mirip seperti abstract class, yang membedakan adalah di Interface, semua method otomatis abstract, tidak memiliki block
+Di interface kita tidak boleh memiliki properties, kita hanya boleh memiliki constant 
+Untuk mewariskan interface, kita tidak menggunakan kata kunci extends, melainkan implements
+Dan berbeda dengan class, kita bisa implements lebih dari satu interface
+
+Kode : Membuat Interface
+namespace Data;
+
+interface HasBrand
+{
+    function getBrand(): string;
+}
+
+interface IsMaintenance
+{
+    function isMaintenance(): bool;
+}
+
+interface Car extends HasBrand
+{
+    function drive(): void;
+
+    function getTire(): int;
+}
+
+Kode : Implement Interface
+class Avanza implements Car, IsMaintenance
+{
+
+    public function drive(): void
+    {
+        echo "Drive Avanza" . PHP_EOL;
+    }
+
+    public function getTire(): int
+    {
+        return 4;
+    }
+
+    public function getBrand(): string
+    {
+        return "Toyota";
+    }
+
+    public function isMaintenance(): bool
+    {
+        return false;
+    }
+}
+
+Interface Inheritance
+Sebelumnya kita sudah tahu kalo di PHP, child class hanya bisa punya 1 class parent
+Namun berbeda dengan interface, sebuah child class bisa implement lebih dari 1 interface
+Bahkan interface pun bisa implement interface lain, bisa lebih dari 1. Namun jika interface ingin mewarisi interface lain, kita menggunakan kata kunci extends, bukan implements
+
+Kode : Interface Inheritance
+interface HasBrand
+{
+    function getBrand(): string;
+}
+
+interface IsMaintenance
+{
+    function isMaintenance(): bool;
+}
+
+interface Car extends HasBrand
+{
+
+Kode : Multiple Interface Inheritance
+class Avanza implements Car, IsMaintenance
+{
+
+    public function drive(): void
+    {
+        echo "Drive Avanza" . PHP_EOL;
+    }
+
+    public function getTire(): int
+    {
+        return 4;
+    }
+
+    public function getBrand(): string
+    {
+        return "Toyota";
+    }
+
+    public function isMaintenance(): bool
+    {
+        return false;
+    }
+}
+
+Trait
+Selain class dan interface, di PHP terdapat feature lain bernama trait
+Trait mirip dengan abstract class, kita bisa membuat konkrit function atau abstract function
+Yang membedakan adalah, di trait bisa kita tambahkan ke dalam class lebih dari satu
+Trait mirip seperti ekstension, dimana kita bisa menambahkan konkrit function ke dalam class dengan trait
+Secara sederhana trait adalah digunakan untuk menyimpan function-function yang bisa digunakan ulang di beberapa class
+Untuk menggunakan trait di class, kita bisa menggunakan kata kunci use
+
+Kode : Membuat Trait
+namespace Data\Traits;
+
+trait SayGoodBye
+{
+    public function goodBye(?string $name): void
+    {
+        if (is_null($name)) {
+            echo "Good bye" . PHP_EOL;
+        } else {
+            echo "Good bye $name" . PHP_EOL;
+        }
+    }
+}
+
+Kode : Menggunakan Trait
+trait All
+{
+    use SayGoodBye, SayHello, HasName, CanRun {
+        // bisa di override
+        // hello as private;
+        // goodBye as private;
+    }
+}
+
+class Person extends ParentPerson
+{
+    use All;
+
+    public function run(): void
+    {
+        echo "Person $this->name is running" . PHP_EOL;
+    }
+}
+
+Trait Properties
+Berbeda dengan interface, di trait, kita bisa menambahkan properties
+Dengan menambahkan properties, secara otomatis class tersebut akan memiliki properties yang ada di trait
+
+Kode : Trait Properties
+trait HasName
+{
+    public string $name;
+}
+
+trait All
+{
+    use SayGoodBye, SayHello, HasName, CanRun {
+        // bisa di override
+        // hello as private;
+        // goodBye as private;
+    }
+}
+
+class Person extends ParentPerson
+{
+    use All;
+
+    public function run(): void
+    {
+        echo "Person $this->name is running" . PHP_EOL;
+    }
+}
+
+Kode : Menggunakan Trait Properties
+require_once "data/SayGoodBye.php";
+
+use Data\Traits\{Person, SayHello, SayGoodBye};
+
+$person = new Person();
+$person->goodBye("Joko");
+$person->hello("Budi");
+
+$person->name = "Eko";
+var_dump($person);
+
+$person->run();
+
+Trait Abstract Function
+Selain konkrit function, di trait juga kita bisa menambahkan abstract function
+Jika terdapat abstract function di trait, maka secara otomatis function tersebut harus di override di class yang menggunakan trait tersebut
+
+Kode : Trait Abstract Function
+trait CanRun
+{
+    public abstract function run(): void;
+}
+
+class Person extends ParentPerson
+{
+    use All;
+
+    public function run(): void
+    {
+        echo "Person $this->name is running" . PHP_EOL;
+    }
+}
+
+Trait Overriding
+Jika sebuah class memiliki parent class yang memiliki function yang sama dengan function di trait, maka secara otomatis trait akan meng-override function tersebut
+Namun jika kita membuat function yang sama di class nya, maka secara otomatis kita akan meng-override function di trait
+Sehingga posisinya seperti ini ParentClass =override by=> Trait =override by=> ChildClass
+
+Kode : Override  Trait
+class Person
+{
+
+    public function goodBye(?string $name): void
+    {
+        echo "Good bye in Person" . PHP_EOL;
+    }
+
+    public function hello(?string $name): void
+    {
+        echo "Hello in Person" . PHP_EOL;
+    }
+}
+
+Trait Visibility Override
+Selain melakukan override function di class, kita juga bisa melakukan override visibility function yang terdapat di trait
+Namun untuk melakukan ini tidak perlu membuat function baru di class, kita bisa gunakan secara sederhana ketika menggunakan trait nya
+
+Kode : Trait Visibility Override
+class Person {
+    use SayGoodBye, SayHello, HasName, CanRun {
+        // bisa di override
+        // hello as private;
+        // goodBye as private;
+    }
+}
 
 
 
