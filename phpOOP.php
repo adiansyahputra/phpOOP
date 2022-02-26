@@ -1230,4 +1230,63 @@ $helloWorld = new class("Eko") implements HelloWorld
         $this->name = $name;
     }
 
+static Keyword
+Kata kunci static adalah keyword yang bisa kita gunakan untuk membuat properties atau function di class bisa diakses secara langsung tanpa menginstansiasi class terlebih dahulu
+Namun ingat, saat kita buat static properties atau function, secara otomatis hal itu tidak akan berhubungan lagi dengan class instance yang kita buat
+Untuk cara mengakses static properties dan function sama seperti mengakses constant, kita bisa menggunakan operator ::
+static function tidak bisa mengakses function biasa, karena function biasa menempel pada class instance sedangkan static function tidak
+
+Kode : Static Properties
+class MathHelper
+{
+    static public string $name = "MathHelper";
+
+echo MathHelper::$name . PHP_EOL;
+MathHelper::$name = "Eko Kurniawan";
+echo MathHelper::$name . PHP_EOL;
+
+Kode : Static Function
+static public function sum(int ...$numbers): int
+    {
+        $total = 0;
+        foreach ($numbers as $number) {
+            $total += $number;
+        }
+        return $total;
+    }
+
+$result = MathHelper::sum(10, 10, 10, 10, 10);
+echo "Result : $result" . PHP_EOL;
+
+stdClass
+stdClass adalah class kosong bawaan dari PHP
+stdClass biasanya digunakan ketika kita melakukan konversi dari tipe lain menjadi tipe object
+stdClass sangat berguna ketika misal kita ingin melakukan konversi dari tipe data array ke object secara otomatis
+
+Kode : Konversi Array ke stdClass
+$array = [
+    "firstName" => "Eko",
+    "middleName" => "Kurniawan",
+    "lastName" => "Khannedy"
+];
+
+$object = (object)$array;
+
+var_dump($object);
+
+echo "First Name $object->firstName" . PHP_EOL;
+echo "Middle Name $object->middleName" . PHP_EOL;
+echo "Last Name $object->lastName" . PHP_EOL;
+
+$arrayLagi = (array) $object;
+var_dump($arrayLagi);
+
+require_once "data/Person.php";
+
+$person = new Person("Eko", "Subang");
+var_dump($person);
+
+$arrayPerson = (array) $person;
+var_dump($arrayPerson);
+
 */
