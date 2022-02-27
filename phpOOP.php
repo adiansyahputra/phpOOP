@@ -1334,4 +1334,391 @@ class Data implements IteratorAggregate
         return new ArrayIterator($array);
     }
 
+Generator
+Sebelumnya kita tahu bahwa untuk membuat object yang bisa di iterasi, kita menggunakan Iterator
+Namun pembuatan Iterator secara manual sangatlah ribet
+Untungnya di PHP, terdapat fitur generator, yang bisa kita gunakan untuk membuat Iterator secara otomatis hanya dengan menggunakan kata kunci yield
+
+Kode : Generator
+function getGenap(int $max): Iterator
+{
+    $array = [];
+    for ($i = 1; $i <= $max; $i++) {
+        if ($i % 2 == 0) {
+            $array[] = $i;
+        }
+    }
+    return new ArrayIterator($array);
+}
+
+foreach (getGenap(100) as $value) {
+    echo "Genap : $value" . PHP_EOL;
+}
+
+function getGanjil(int $max): Iterator
+{
+    for ($i = 1; $i <= $max; $i++) {
+        if ($i % 2 == 1) {
+            yield $i;
+        }
+    }
+}
+
+foreach (getGanjil(100) as $value) {
+    echo "Ganjil : $value" . PHP_EOL;
+}
+
+Object Cloning
+Kadang kita ada kebutuhan untuk menduplikasi sebuah object
+Biasanya untuk melakukan hal ini, kita bisa membuat object baru, lalu menyalin semua properties di object awal ke object baru
+Untungnya PHP mendukung object cloning
+Kita bisa menggunakan perintah clone untuk membuat duplikasi object
+Secara otomatis semua properties di object awal akan di duplikasi ke object baru
+
+Kode : Object Cloning
+require_once "data/Student.php";
+
+$student1 = new Student();
+$student1->id = "1";
+$student1->name = "Eko";
+$student1->value = 100;
+$student1->setSample("XXX");
+
+var_dump($student1);
+
+$student2 = clone $student1;
+var_dump($student2);
+
+__clone() Function
+Kadang menyalin semua properties bukanlah yang kita inginkan
+Misal saja kita hanya ingin menyalin beberapa properties saja, tidak ingin semuanya
+Jika kita ingin memodifikasi cara PHP melakukan clone, kita bisa membuat function di dalam class nya dengan nama function __clone()
+Function __clone() akan dipanggil di object hasil duplikasi setelah proses duplikasi selesai
+Jadi jika kita ingin menghapus beberapa properties, bisa kita lakukan di function __clone()
+
+Kode : __clone() Function
+class Student
+{
+    public string $id;
+    public string $name;
+    public int $value;
+    private string $sample;
+
+    public function __clone()
+    {
+        unset($this->sample);
+    }
+
+Comparing Object
+Sama seperti tipe data yang lain, untuk membandingkan dua buah object, kita bisa menggunakan operator == (equals) dan === (identity)
+Operator == (equals) membandingkan semua properties yang terdapat di object tersebut, dan tiap properties juga akan dibandingkan menggunakan operator == (equals)
+Sedangkan operator === (identity), maka akan membandingkan apakah object identik, artinya mengacu ke object yang sama
+
+Kode : Comparing Object
+require_once "data/Student.php";
+
+$student1 = new Student();
+$student1->id = "1";
+$student1->name = "Eko";
+$student1->value = 100;
+
+$student2 = new Student();
+$student2->id = "1";
+$student2->name = "Eko";
+$student2->value = 100;
+
+var_dump($student1 == $student2);
+var_dump($student1 === $student2);
+var_dump($student1 === $student1);
+
+Magic Function
+Magic function adalah function-function yang sudah ditentukan kegunaannya di PHP
+Kita tidak bisa membuat function tersebut, kecuali memang sudah ditentukan kegunaannya
+Sebelumnya kita sudah membahas beberapa magic function, seperti __construct() sebagai constructor, __destruct() sebagai destructor, dan __clone() sebagai object cloning
+Masih banyak magic function lainnya, kita bisa melihatnya di link berikut : https://www.php.net/manual/en/language.oop5.magic.php 
+
+__toString() Function
+__toString() function merupakan salah satu magic function yang digunakan sebagai representasi string sebuah object
+Jika misal kita ingin membuat string dari object kita, kita bisa membuat function __toString()
+
+Kode : __toString() Function
+class Student
+{
+    public string $id;
+    public string $name;
+    public int $value;
+    private string $sample;
+    
+    public function __toString(): string
+    {
+        return "Student id:$this->id, name:$this->name, value:$this->value";
+    }
+
+require_once "data/Student.php";
+
+$student1 = new Student();
+$student1->id = "1";
+$student1->name = "Eko";
+$student1->value = 100;
+
+$string = (string) $student1;
+echo $string . PHP_EOL;
+
+// bisa seperti ini
+echo $student1 . PHP_EOL;
+
+
+__invoke() Function
+__invoke() merupakan function yang dieksekusi ketika object yang kita buat dianggap sebagai function
+Misal ketika kita membuat object $student, lalu kita melakukan $student(), maka secara otomatis function __invoke() yang akan dieksekusi
+
+Kode : __invoke() Function
+class Student
+{
+    public string $id;
+    public string $name;
+    public int $value;
+    private string $sample;
+    
+    public function __invoke(...$arguments): void
+    {
+        $join = join(",", $arguments);
+        echo "Invoke student with arguments $join" . PHP_EOL;
+    }
+
+require_once "data/Student.php";
+
+$student1 = new Student();
+$student1->id = "1";
+$student1->name = "Eko";
+$student1->value = 100;
+
+$student1(1, "eko", true, "kurniawan");
+
+
+__debugInfo() Function
+Sebelumnya kita sering melakukan debug variable menggunakan function var_dump()
+Function var_dump() sebenarnya memanggil function __debugInfo() 
+Jika kita ingin mengubah isi dari debug info, kita bisa membuat function __debugInfo()
+
+Kode : __debugInfo() Function
+class Student
+{
+    public string $id;
+    public string $name;
+    public int $value;
+    private string $sample;
+    
+    public function __debugInfo()
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "value" => $this->value,
+            "sample" => $this->sample,
+            "author" => "Eko",
+            "version" => "1.0.0"
+        ];
+    }
+
+require_once "data/Student.php";
+
+$student1 = new Student();
+$student1->id = "1";
+$student1->name = "Eko";
+$student1->value = 100;
+$student1->setSample("SAMPLE");
+
+var_dump($student1);
+
+Dan masih banyak lagi
+https://www.php.net/manual/en/language.oop5.magic.php 
+
+Overloading
+Overloading adalah kemampuan secara dinamis membuat properties atau function
+Ini mirip meta programming di bahasa pemrograman lain seperti Ruby
+Namun ini berbeda dengan function overloading di bahasa pemrograman lain seperti Java
+Overloading ini erat kaitannya dengan magic function yang sebelumnya sudah kita bahas
+
+Properties Overloading
+Saat kita mengakses properties, maka secara otomatis properties akan diakses
+Namun jika ternyata properties tersebut tidak tersedia di objectnya, maka PHP tidak secara otomatis menjadikan itu error
+PHP akan melakukan fallback ke magic function
+Dengan demikian kita bisa membuat properties secara dinamis dengan memanfaatkan magic function tersebut
+Ada beberapa magic function yang bisa kita gunakan untuk properties overloading
+
+Magic Function untuk Properties Overloading
+ Magic Function
+Keterangan
+__set($name, $value) : void
+Dieksekusi ketika mengubah properties yang tidak tersedia
+__get($name) : mixed
+Dieksekusi ketika mengakses properties yang tidak tersedia
+__isset ($name ) : bool
+Dieksekusi ketika mengecek isset() atau empty() properties yang tidak tersedia
+__unset($name) : void
+Dieksekusi ketika menggunakan unset() properties yang tidak tersedia
+
+Kode : Properties Overloading
+class Zero
+{
+    private array $properties = [];
+
+    public function __get($name)
+    {
+        return $this->properties[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        $this->properties[$name] = $value;
+    }
+
+    public function __isset($name): bool
+    {
+        return isset($this->properties[$name]);
+    }
+
+    public function __unset($name)
+    {
+        unset($this->properties[$name]);
+    }
+
+$zero = new Zero();
+$zero->firstName = "Eko";
+$zero->middleName = "Kurniawan";
+$zero->lastName = "Khannedy";
+
+echo "First Name : $zero->firstName" . PHP_EOL;
+echo "Middle Name : $zero->middleName" . PHP_EOL;
+echo "Last Name : $zero->lastName" . PHP_EOL;
+
+Function Overloading
+Saat kita mengakses function, maka secara otomatis function akan diakses
+Namun jika ternyata function tersebut tidak tersedia di objectnya, maka PHP tidak secara otomatis menjadikan itu error
+PHP akan melakukan fallback ke magic function
+Dengan demikian kita bisa membuat function secara dinamis dengan memanfaatkan magic function tersebut
+Ada beberapa magic function yang bisa kita gunakan untuk function overloading
+
+Magic Function untuk Function Overloading
+ Magic Function
+Keterangan
+__call ( $name , $arguments ) : mixed
+Dieksekusi ketika memanggil function yang tidak tersedia
+static __callStatic ( $name , $arguments ) : mixed
+Dieksekusi ketika memanggil static function yang tidak tersedia
+
+Kode : Function Overloading
+class Zero
+{
+    public function __call($name, $arguments)
+    {
+        $join = join(",", $arguments);
+        echo "Call function $name with arguments $join" . PHP_EOL;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        $join = join(",", $arguments);
+        echo "Call static function $name with arguments $join" . PHP_EOL;
+    }
+}
+
+$zero->sayHello("Eko", "Khannedy");
+Zero::sayHello("Eko", "Khannedy");
+
+Covariance
+Saat kita meng override function dari parent class, biasanya di child class kita akan membuat function yang sama dengan function yang di parent
+Covariance memungkinkan kita meng override return function yang di parent dengan return value yang lebih spesifik
+
+Kode : Inheritance
+namespace Data;
+abstract class Animal {}
+class Cat extends Animal {}
+class Dog extends Animal {}
+
+Kode : Covariance
+namespace Data;
+
+require_once "Animal.php";
+
+interface AnimalShelter
+{
+    function adopt(string $name): Animal;
+}
+
+class CatShelter implements AnimalShelter
+{
+    public function adopt(string $name): Cat
+    {
+        $cat = new Cat();
+        $cat->name = $name;
+        return $cat;
+    }
+}
+
+class DogShelter implements AnimalShelter
+{
+    public function adopt(string $name): Dog
+    {
+        $dog = new Dog();
+        $dog->name = $name;
+        return $dog;
+    }
+}
+
+Contravariance
+Sedangkan contravariance adalah memperbolehkan sebuah child class untuk membuat function argument yang lebih tidak spesifik dibandingkan parent nya
+
+Kode : Inheritance
+namespace Data;
+
+class Food
+{
+}
+
+class AnimalFood extends Food
+{
+}
+
+
+Kode : Contravariance (1)
+abstract class Animal
+{
+    public string $name;
+
+    abstract public function run(): void;
+
+    abstract public function eat(AnimalFood $animalFood): void;
+}
+
+Kode : Contravariance (2)
+class Cat extends Animal
+{
+    public function run(): void
+    {
+        echo "Cat $this->name is running" . PHP_EOL;
+    }
+
+    public function eat(AnimalFood $animalFood): void
+    {
+        echo "Cat is eating" . PHP_EOL;
+    }
+}
+
+class Dog extends Animal
+{
+    public function run(): void
+    {
+        echo "Dog $this->name is running" . PHP_EOL;
+    }
+
+    public function eat(Food $animalFood): void
+    {
+        echo "Dog is eating" . PHP_EOL;
+    }
+}
+
+
+
 */
