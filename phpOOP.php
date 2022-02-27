@@ -1966,4 +1966,48 @@ $result = preg_split("/[\s,-]/", "Eko Kurniawan Khannedy,Programmer,Zaman-Now");
 
 var_dump($result);
 
+Reflection
+Reflection adalah membaca struktur kode pada saat aplikasi sedang berjalan
+Reflection adalah materi yang sangat panjang dan banyak, sehingga disini kita hanya akan membahas perkenalannya saja
+Reflection adalah fitur yang biasanya digunakan saat kita membuat framework
+https://www.php.net/manual/en/book.reflection.php 
+
+Studi Kasus : Membuat Validation Framework
+Sekarang kita akan coba melakukan studi kasus menggunakan Reflection
+Kita akan membuat validation framework menggunakan reflection
+Validation framework nya cukup sederhana, kita hanya akan mengecek apakah properties bernilai null atau tidak, kalo null atau belum di set, kita akan throw ValidationException
+Tanpa reflection, biasanya untuk melakukan hal ini, kita butuh pengecekan secara manual
+
+Kode : Validation Tanpa Reflection
+class ValidationUtil
+{
+    static function validate(LoginRequest $request)
+    {
+        if (!isset($request->username)) {
+            throw new ValidationException("username is not set");
+        } else if (!isset($request->password)) {
+            throw new ValidationException("password is not set");
+        } else if (is_null($request->username)) {
+            throw new ValidationException("username is null");
+        } else if (is_null($request->password)) {
+            throw new ValidationException("password is null");
+        }
+    }
+
+Kode : Validation Menggunakan Reflection
+class ValidationUtil
+{
+    static function validateReflection($request)
+    {
+        $reflection = new ReflectionClass($request);
+        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        foreach ($properties as $property) {
+            if (!$property->isInitialized($request)) {
+                throw new ValidationException("$property->name is not set");
+            } else if (is_null($property->getValue($request))) {
+                throw new ValidationException("$property->name is null");
+            }
+        }
+    }
+
 */
